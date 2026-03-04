@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puanmatik - Skor Takip Uygulaması</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="round-info">
+            <div class="round-label">Mevcut Tur</div>
+            <div class="round-nav">
+                <button id="prevRoundBtn" class="nav-arrow" title="Önceki Tur">❮</button>
+                <div id="roundCounter" class="round-number">1</div>
+                <button id="nextRoundNavBtn" class="nav-arrow" title="Sonraki Tur">❯</button>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="allHistoryBtn" class="btn-all-history">Tüm Geçmiş</button>
+            <button id="finishGameBtn" class="btn-finish-game">Oyunu Bitir</button>
+            <button id="nextRoundBtn" class="btn-next-round">Turu Bitir</button>
+            <button id="resetBtn" class="btn-next-round" style="background: var(--glass-border);">SIFIRLA</button>
+        </div>
+    </header>
+
+    <main class="table-container">
+        <div class="player-card" data-player-id="0">
+            <div class="player-header">
+                <div class="player-name" id="name-0">Oyuncu 1</div>
+                <button class="edit-name-btn" data-player-id="0">✎</button>
+            </div>
+            <div class="player-score" id="score-0">0</div>
+            <div class="history-preview" id="history-preview-0"></div>
+        </div>
+        <div class="player-card" data-player-id="1">
+            <div class="player-header">
+                <div class="player-name" id="name-1">Oyuncu 2</div>
+                <button class="edit-name-btn" data-player-id="1">✎</button>
+            </div>
+            <div class="player-score" id="score-1">0</div>
+            <div class="history-preview" id="history-preview-1"></div>
+        </div>
+        <div class="player-card" data-player-id="2">
+            <div class="player-header">
+                <div class="player-name" id="name-2">Oyuncu 3</div>
+                <button class="edit-name-btn" data-player-id="2">✎</button>
+            </div>
+            <div class="player-score" id="score-2">0</div>
+            <div class="history-preview" id="history-preview-2"></div>
+        </div>
+        <div class="player-card" data-player-id="3">
+            <div class="player-header">
+                <div class="player-name" id="name-3">Oyuncu 4</div>
+                <button class="edit-name-btn" data-player-id="3">✎</button>
+            </div>
+            <div class="player-score" id="score-3">0</div>
+            <div class="history-preview" id="history-preview-3"></div>
+        </div>
+    </main>
+
+    <!-- Modal for Score Input & History -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeModal" class="close-modal">&times;</button>
+            <div class="modal-header">
+                <div id="modalPlayerName" class="modal-player-name">OYUNCU ADI</div>
+            </div>
+
+            <div class="score-type-toggle">
+                <button id="penaltyBtn" class="type-btn active penalty">CEZA (+)</button>
+                <button id="rewardBtn" class="type-btn reward">ÖDÜL (-)</button>
+            </div>
+
+            <div class="display-area">
+                <span id="currentInput" class="current-input">0</span>
+            </div>
+
+            <div class="num-pad">
+                <button class="num-btn" data-val="1">1</button>
+                <button class="num-btn" data-val="2">2</button>
+                <button class="num-btn" data-val="3">3</button>
+                <button class="num-btn" data-val="4">4</button>
+                <button class="num-btn" data-val="5">5</button>
+                <button class="num-btn" data-val="6">6</button>
+                <button class="num-btn" data-val="7">7</button>
+                <button class="num-btn" data-val="8">8</button>
+                <button class="num-btn" data-val="9">9</button>
+                <button class="num-btn clear">C</button>
+                <button class="num-btn" data-val="0">0</button>
+                <button class="num-btn" id="backspace">⌫</button>
+            </div>
+
+            <button id="saveScoreBtn" class="btn-save">KAYDET</button>
+
+            <div id="historySection">
+                <p
+                    style="color: var(--text-secondary); font-size: 0.9rem; margin: 1.5rem 0 0.5rem 0; font-weight: 600;">
+                    Puan Geçmişi</p>
+                <div id="historyContainer" class="history-container">
+                    <!-- History rows will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global History Modal -->
+    <div id="globalHistoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeGlobalModal" class="close-modal">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-player-name">Tüm Geçmiş</h2>
+            </div>
+            <div id="globalHistoryContainer" class="global-history-list">
+                <!-- Grouped history will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Past Round History Modal -->
+    <div id="pastRoundModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closePastModal" class="close-modal">&times;</button>
+            <div class="modal-header">
+                <h2 id="pastModalPlayerName" class="modal-player-name">Oyuncu 1</h2>
+                <div id="pastModalRoundInfo" style="color: var(--accent-secondary); font-weight: 700; margin-top: 5px;">
+                    1. Tur Geçmişi</div>
+            </div>
+            <div id="pastHistoryContainer" class="history-container">
+                <!-- History items will be injected here -->
+            </div>
+            <p
+                style="text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic;">
+                * Geçmiş turlarda puan eklenemez. Düzenleme için "Tüm Geçmiş" ekranını kullanın.
+            </p>
+        </div>
+    </div>
+
+    <!-- Game Results Modal -->
+    <div id="resultsModal" class="modal-overlay">
+        <div class="modal-content results-content">
+            <button id="closeResultsModal" class="close-modal">&times;</button>
+            <div class="results-header">
+                <div class="winner-trophy">
+                    <img id="trophyImg" src="" alt="Winner Trophy">
+                </div>
+                <h1 class="congrats-text">Tebrikler!</h1>
+                <p id="winnerNameDisplay" class="winner-name">Kuzey</p>
+                <p class="winner-label">Oyunun Kazananı</p>
+            </div>
+
+            <div id="rankingList" class="ranking-list">
+                <!-- Rankings will be injected here -->
+            </div>
+
+            <div class="results-actions">
+                <button id="newGameBtn" class="btn-next-round" style="width: 100%;">Yeni Oyun Başlat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
