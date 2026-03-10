@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentInputDisplay = document.getElementById('currentInput');
     const saveScoreBtn = document.getElementById('saveScoreBtn');
     const numButtons = document.querySelectorAll('.num-btn[data-val]');
+    const doubleZeroBtn = document.getElementById('doubleZeroBtn');
     const clearBtn = document.querySelector('.num-btn.clear');
     const backspaceBtn = document.getElementById('backspace');
     const tableContainer = document.querySelector('.table-container');
@@ -101,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (historyPreview) {
                 // Filter history by viewed round
                 const roundHistory = player.history.filter(h => h.round === gameState.viewedRound);
-                const recent = roundHistory.slice(-3).reverse();
-                historyPreview.innerHTML = recent.map(item => `
+                const allItems = roundHistory.slice().reverse();
+                historyPreview.innerHTML = allItems.map(item => `
                     <div class="history-item-mini">
                         <span class="history-val-${item.type}">${item.type === 'penalty' ? '+' : '-'}${item.value}</span>
                         <span>${item.type === 'penalty' ? 'Ceza' : 'Ödül'}</span>
@@ -485,6 +486,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saveScoreBtn) saveScoreBtn.addEventListener('click', saveScore);
     if (clearBtn) clearBtn.addEventListener('click', handleClear);
     if (backspaceBtn) backspaceBtn.addEventListener('click', handleBackspace);
+    if (doubleZeroBtn) doubleZeroBtn.addEventListener('click', () => {
+        if (gameState.currentInput === '0') return; // don't add 00 to a bare zero
+        if (gameState.currentInput.length < 5) {
+            gameState.currentInput += '00';
+            updateModalDisplay();
+        }
+    });
+
+    // Prevent double-tap zoom on all numpad buttons
+    document.querySelectorAll('.num-btn, .type-btn, .btn-save').forEach(btn => {
+        btn.style.touchAction = 'manipulation';
+    });
 
     numButtons.forEach(btn => {
         btn.addEventListener('click', () => handleNumClick(btn.dataset.val));
