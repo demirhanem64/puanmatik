@@ -418,6 +418,13 @@ header {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.num-pad-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
@@ -431,6 +438,15 @@ header {
     font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.type-btn {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .num-btn:hover {
