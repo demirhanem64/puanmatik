@@ -416,19 +416,13 @@ header {
 /* Numeric Pad */
 .num-pad {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-}
-
-.num-pad-bottom {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(12, 1fr);
     gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
 .num-btn {
+    grid-column: span 4;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     color: white;
@@ -443,10 +437,8 @@ header {
     user-select: none;
 }
 
-.type-btn {
-    touch-action: manipulation;
-    -webkit-user-select: none;
-    user-select: none;
+.num-wide {
+    grid-column: span 3;
 }
 
 .num-btn:hover {
