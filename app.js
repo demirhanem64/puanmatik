@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backspaceBtn = document.getElementById('backspace');
     const tableContainer = document.querySelector('.table-container');
     const historyContainer = document.getElementById('historyContainer');
+    const cikIndicator = document.getElementById('cikIndicator');
 
     // --- Initialization ---
     function init() {
@@ -89,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
             roundCounter.textContent = gameState.viewedRound;
             // Highlight if viewing past round
             roundCounter.style.color = gameState.viewedRound === gameState.round ? 'var(--accent-primary)' : 'var(--accent-secondary)';
+        }
+
+        // Cik indicator logic
+        if (cikIndicator) {
+            const cikRounds = [1, 5, 9, 13];
+            cikIndicator.style.display = cikRounds.includes(gameState.viewedRound) ? 'flex' : 'none';
         }
 
         // Find min and max scores (excluding 0 if nobody has points, or just handle all zero)
