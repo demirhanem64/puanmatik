@@ -91,13 +91,34 @@ document.addEventListener('DOMContentLoaded', () => {
             roundCounter.style.color = gameState.viewedRound === gameState.round ? 'var(--accent-primary)' : 'var(--accent-secondary)';
         }
 
+        // Find min and max scores (excluding 0 if nobody has points, or just handle all zero)
+        const scores = gameState.players.map(p => p.score);
+        const maxScore = Math.max(...scores);
+        const minScore = Math.min(...scores);
+        const allZero = scores.every(s => s === 0);
+
         gameState.players.forEach(player => {
             const scoreEl = document.getElementById(`score-${player.id}`);
             const nameEl = document.getElementById(`name-${player.id}`);
             const historyPreview = document.getElementById(`history-preview-${player.id}`);
+            const card = document.querySelector(`.player-card[data-player-id="${player.id}"]`);
 
             if (scoreEl) scoreEl.textContent = player.score;
             if (nameEl) nameEl.textContent = player.name;
+
+            if (card) {
+                // Remove existing highlights
+                card.classList.remove('card-highest', 'card-lowest');
+                
+                if (!allZero) {
+                    if (player.score === maxScore) {
+                        card.classList.add('card-highest');
+                    }
+                    if (player.score === minScore) {
+                        card.classList.add('card-lowest');
+                    }
+                }
+            }
 
             if (historyPreview) {
                 // Filter history by viewed round

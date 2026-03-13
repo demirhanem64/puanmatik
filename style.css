@@ -32,6 +32,22 @@ body {
     align-items: center;
     padding: 1rem;
     overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: "cetele";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 15vw;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.03);
+    z-index: -1;
+    pointer-events: none;
+    text-transform: lowercase;
+    font-family: 'Outfit', sans-serif;
 }
 
 /* Header & Controls */
@@ -202,6 +218,35 @@ header {
     background: rgba(45, 55, 72, 0.8);
     border-color: var(--accent-primary);
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* Dynamic Highlights */
+.player-card.card-highest {
+    border: 2px solid var(--danger);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.player-card.card-lowest {
+    border: 2px solid var(--success);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.player-card.card-lowest::after {
+    content: "🏆";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.5rem;
+    background: #1e293b;
+    border: 1px solid var(--success);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10;
 }
 
 .player-header {
