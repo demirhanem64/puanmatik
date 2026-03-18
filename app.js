@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     function init() {
-        const savedData = localStorage.getItem('puanmatik_state_v3');
+        const savedData = sessionStorage.getItem('puanmatik_state_v3');
         if (savedData) {
             try {
                 const parsed = JSON.parse(savedData);
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveState() {
-        localStorage.setItem('puanmatik_state_v3', JSON.stringify({
+        sessionStorage.setItem('puanmatik_state_v3', JSON.stringify({
             players: gameState.players,
             round: gameState.round
         }));
