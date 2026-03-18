@@ -603,24 +603,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // Capture and Share Logic
     if (shareResultBtn) {
         shareResultBtn.addEventListener('click', async () => {
-            const resultsContent = document.querySelector('.results-modal');
-            if (!resultsContent) return;
+            const resultsContent = document.querySelector('.results-content');
+            if (!resultsContent) {
+                console.error("Results content not found for sharing");
+                return;
+            }
 
-            // Optional: temporarily hide elements we don't want in the screenshot
+            // Temporarily hide elements we don't want in the screenshot
             const actionsDiv = document.querySelector('.results-actions');
             const closeBtn = document.getElementById('closeResultsModal');
-            if (actionsDiv) actionsDiv.style.display = 'none';
-            if (closeBtn) closeBtn.style.display = 'none';
+            if (actionsDiv) actionsDiv.style.visibility = 'hidden';
+            if (closeBtn) closeBtn.style.visibility = 'hidden';
+
+            // Change Share button text to indicate loading
+            const originalText = shareResultBtn.innerHTML;
+            shareResultBtn.innerHTML = 'Hazırlanıyor...';
+
+            // Wait a tiny bit for the DOM changes (visibility) to apply
+            await new Promise(resolve => setTimeout(resolve, 150));
 
             try {
                 const canvas = await html2canvas(resultsContent, {
                     backgroundColor: '#1E2235', // Match modal background
-                    scale: 2 // Higher resolution
+                    scale: 2, // Higher resolution
+                    useCORS: true, // Allow loading external images like emojis/SVG if any
+                    logging: true // Log errors to console if it fails
                 });
 
                 // Restore hidden elements
-                if (actionsDiv) actionsDiv.style.display = 'flex';
-                if (closeBtn) closeBtn.style.display = 'block';
+                if (actionsDiv) actionsDiv.style.visibility = 'visible';
+                if (closeBtn) closeBtn.style.visibility = 'visible';
+                shareResultBtn.innerHTML = originalText;
 
                 canvas.toBlob(async (blob) => {
                     const file = new File([blob], 'cetele-sonuclar.png', { type: 'image/png' });
@@ -646,9 +659,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Error generating screenshot:', error);
                 // Restore hidden elements in case of error
-                if (actionsDiv) actionsDiv.style.display = 'flex';
-                if (closeBtn) closeBtn.style.display = 'block';
-                alert('Görsel oluşturulurken bir hata oluştu.');
+                if (actionsDiv) actionsDiv.style.visibility = 'visible';
+                if (closeBtn) closeBtn.style.visibility = 'visible';
+                shareResultBtn.innerHTML = originalText;
+                alert('Görsel oluşturulurken bir hata oluştu: ' + error.message);
             }
         });
     }
