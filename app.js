@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeResultsBtn = document.getElementById('closeResultsModal');
     const finishGameBtn = document.getElementById('finishGameBtn');
     const newGameBtn = document.getElementById('newGameBtn');
+    const shareResultBtn = document.getElementById('shareResultBtn');
     const rankingList = document.getElementById('rankingList');
     const winnerNameDisplay = document.getElementById('winnerNameDisplay');
     const trophyImg = document.getElementById('trophyImg');
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- UI Updates ---
     function updateUI() {
+
         if (roundCounter) {
             roundCounter.textContent = gameState.viewedRound;
             // Highlight if viewing past round
@@ -209,17 +211,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const sortedRounds = Object.keys(rounds).sort((a, b) => b - a);
 
-        globalHistoryContainer.innerHTML = sortedRounds.map(rNum => `
+        globalHistoryContainer.innerHTML = sortedRounds.map(rNum => {
+            // Calculate totals for this round
+            const roundTotals = {};
+            let minRoundScore = Infinity;
+            let roundWinnerId = null;
+
+            // Calculate exact score changes for this round
+            Object.keys(rounds[rNum]).forEach(pId => {
+                const total = rounds[rNum][pId].reduce((sum, item) => {
+                    return item.type === 'penalty' ? sum + item.value : sum - item.value;
+                }, 0);
+                roundTotals[pId] = total;
+
+                // Lowest (or most negative) change is the "winner" for that round
+                if (total <= minRoundScore && total > 0) { // Assuming >0 means they got penalties, but 0 is better. If 0 is best:
+                   // Wait, Okey rules: lowest score wins.
+                }
+                if (total < minRoundScore) {
+                    minRoundScore = total;
+                    roundWinnerId = pId;
+                }
+            });
+
+            // Handle case where everyone has 0 or same score
+            const allSame = Object.values(roundTotals).every(v => v === minRoundScore);
+            if (allSame) roundWinnerId = null;
+
+            const winnerPlayer = roundWinnerId ? gameState.players.find(p => p.id === parseInt(roundWinnerId)) : null;
+            const winnerMarkup = winnerPlayer ? `<span style="color:var(--success); font-size: 0.9em; margin-left: 10px;">- ${winnerPlayer.name} 🏆</span>` : '';
+
+            return `
             <div class="round-group">
                 <div class="round-group-title">
-                    <span>${rNum}. TUR</span>
+                    <span>${rNum}. TUR ${winnerMarkup}</span>
                 </div>
                 ${Object.keys(rounds[rNum]).map(pId => {
-            const player = gameState.players.find(p => p.id === parseInt(pId));
-            return `
+                const player = gameState.players.find(p => p.id === parseInt(pId));
+                const pTotal = roundTotals[pId];
+                return `
                         <div class="player-history-group">
-                            <div class="player-group-name">
-                                <span style="color:var(--accent-primary)">●</span> ${player.name}
+                            <div class="player-group-name" style="display:flex; justify-content:space-between; align-items:center;">
+                                <div><span style="color:var(--accent-primary)">●</span> ${player.name}</div>
+                                <div style="font-size: 0.9em; color: ${pTotal < 0 ? 'var(--success)' : 'var(--danger)'};">
+                                    ${pTotal > 0 ? '+' : ''}${pTotal} Puan
+                                </div>
                             </div>
                             ${rounds[rNum][pId].map(item => `
                                 <div class="history-row" style="padding: 0.6rem; margin-bottom: 0.4rem;">
@@ -234,9 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             `).join('')}
                         </div>
                     `;
-        }).join('')}
+                 }).join('')}
             </div>
-        `).join('');
+        `}).join('');
 
         // Attach listeners for global modal
         globalHistoryContainer.querySelectorAll('.action-btn.delete').forEach(btn => {
@@ -564,6 +600,70 @@ document.addEventListener('DOMContentLoaded', () => {
             closeResultsModal();
         }
     });
+
+    // Capture and Share Logic
+    if (shareResultBtn) {
+        shareResultBtn.addEventListener('click', async () => {
+            const resultsContent = document.querySelector('.results-modal-content');
+            if (!resultsContent) return;
+
+            // Optional: temporarily hide elements we don't want in the screenshot
+            const actionsDiv = document.querySelector('.results-actions');
+            const closeBtn = document.getElementById('closeResultsModal');
+            if (actionsDiv) actionsDiv.style.display = 'none';
+            if (closeBtn) closeBtn.style.display = 'none';
+
+            try {
+                const canvas = await html2canvas(resultsContent, {
+                    backgroundColor: '#1E2235', // Match modal background
+                    scale: 2 // Higher resolution
+                });
+
+                // Restore hidden elements
+                if (actionsDiv) actionsDiv.style.display = 'flex';
+                if (closeBtn) closeBtn.style.display = 'block';
+
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'cetele-sonuclar.png', { type: 'image/png' });
+
+                    // Only try Web Share API if Mobile/Supported
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] }) && /Mobi|Android/i.test(navigator.userAgent)) {
+                        try {
+                            await navigator.share({
+                                title: 'Cetele - Oyun Sonucu',
+                                text: 'İşte oyunumuzun sonuçları! 🏆',
+                                files: [file]
+                            });
+                        } catch (err) {
+                            console.log('Share API failed or user cancelled:', err);
+                            fallbackDownload(blob);
+                        }
+                    } else {
+                        // Fallback: direct download for Desktop
+                        fallbackDownload(blob);
+                    }
+                }, 'image/png');
+
+            } catch (error) {
+                console.error('Error generating screenshot:', error);
+                // Restore hidden elements in case of error
+                if (actionsDiv) actionsDiv.style.display = 'flex';
+                if (closeBtn) closeBtn.style.display = 'block';
+                alert('Görsel oluşturulurken bir hata oluştu.');
+            }
+        });
+    }
+
+    function fallbackDownload(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cetele-sonuclar.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
     init();
 });
