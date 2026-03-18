@@ -225,18 +225,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 roundTotals[pId] = total;
 
                 // Lowest (or most negative) change is the "winner" for that round
-                if (total <= minRoundScore && total > 0) { // Assuming >0 means they got penalties, but 0 is better. If 0 is best:
-                   // Wait, Okey rules: lowest score wins.
-                }
                 if (total < minRoundScore) {
                     minRoundScore = total;
                     roundWinnerId = pId;
                 }
             });
 
-            // Handle case where everyone has 0 or same score
-            const allSame = Object.values(roundTotals).every(v => v === minRoundScore);
-            if (allSame) roundWinnerId = null;
+            // Handle case where everyone has the same score (greater than 1 player)
+            const entriesCount = Object.values(roundTotals).length;
+            const allSame = entriesCount > 1 && Object.values(roundTotals).every(v => v === minRoundScore);
+            const allZero = Object.values(roundTotals).every(v => v === 0);
+            if (allSame || allZero) roundWinnerId = null;
 
             const winnerPlayer = roundWinnerId ? gameState.players.find(p => p.id === parseInt(roundWinnerId)) : null;
             const winnerMarkup = winnerPlayer ? `<span style="color:var(--success); font-size: 0.9em; margin-left: 10px;">- ${winnerPlayer.name} 🏆</span>` : '';
@@ -604,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Capture and Share Logic
     if (shareResultBtn) {
         shareResultBtn.addEventListener('click', async () => {
-            const resultsContent = document.querySelector('.results-modal-content');
+            const resultsContent = document.querySelector('.results-modal');
             if (!resultsContent) return;
 
             // Optional: temporarily hide elements we don't want in the screenshot
