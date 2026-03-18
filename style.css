@@ -772,6 +772,10 @@ header {
     .winner-name {
         font-size: 1.5rem;
     }
+    
+    .results-actions-group {
+        flex-direction: column;
+    }
 
     .winner-trophy {
         width: 120px;
@@ -828,10 +832,8 @@ header {
     font-size: 2.5rem;
     font-weight: 900;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #FFD700; /* Solid color fixes html2canvas background-clip issues */
+    text-shadow: 0 4px 10px rgba(255, 215, 0, 0.3), 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .winner-name {
@@ -898,7 +900,21 @@ header {
 .rank-score {
     font-weight: 800;
     font-size: 1.2rem;
-    color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Results Actions - Specific sizing */
+.results-actions-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.results-actions-group .btn-primary {
+    padding: 1.2rem 1rem;
+    font-size: 1.15rem;
+    border-radius: 14px;
+    font-weight: 800;
 }
 
 .results-actions {
