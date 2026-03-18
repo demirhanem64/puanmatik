@@ -348,13 +348,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetGame() {
-        if (confirm('Tüm skorları ve turları sıfırlamak istediğinize emin misiniz?')) {
+        if (confirm('Tüm skorları ve turları sıfırlamak istediğinize emin misiniz? (Oyuncu isimleri korunacaktır)')) {
             gameState.players.forEach(p => {
                 p.score = 0;
                 p.history = [];
             });
             gameState.round = 1;
-            localStorage.removeItem('puanmatik_state_v3');
+            gameState.viewedRound = 1;
+            saveState(); // Overwrite cache with 0 score state instead of removing, keeps names
             updateUI();
         }
     }
@@ -627,7 +628,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: '#1E2235', // Match modal background
                     scale: 2, // Higher resolution
                     useCORS: true, // Allow loading external images like emojis/SVG if any
-                    logging: true // Log errors to console if it fails
+                    logging: true, // Log errors to console if it fails
+                    onclone: (clonedDoc) => {
+                        const clonedContent = clonedDoc.querySelector('.results-content');
+                        if (clonedContent) {
+                            // Replace transparent gradient with solid dark color to prevent pale screenshot
+                            clonedContent.style.background = '#1E2235';
+                        }
+                    }
                 });
 
                 // Restore hidden elements
