@@ -654,55 +654,75 @@ document.addEventListener('DOMContentLoaded', () => {
                     onclone: (clonedDoc) => {
                         const clonedContent = clonedDoc.querySelector('.results-content');
                         if (clonedContent) {
-                            // High-contrast Theme for Screenshot
-                            clonedContent.style.background = '#ffffff';
-                            clonedContent.style.color = '#000000';
-                            clonedContent.style.border = '1px solid #dddddd';
-                            clonedContent.style.borderRadius = '0'; // Flat for better framing
+                            // 1. Force Solid Base Theme
+                            clonedContent.style.setProperty('background', '#ffffff', 'important');
+                            clonedContent.style.setProperty('color', '#000000', 'important');
+                            clonedContent.style.setProperty('opacity', '1', 'important');
+                            clonedContent.style.setProperty('filter', 'none', 'important');
+                            clonedContent.style.setProperty('backdrop-filter', 'none', 'important');
+                            clonedContent.style.setProperty('border', '1px solid #e2e8f0', 'important');
+                            clonedContent.style.setProperty('border-radius', '0', 'important');
+                            clonedContent.style.setProperty('transform', 'none', 'important');
+                            clonedContent.style.setProperty('animation', 'none', 'important');
 
-                            // Restyle Header
+                            // 2. Clear Header Interference (Gradients and Text Masks)
                             const congrats = clonedContent.querySelector('.congrats-text');
                             if (congrats) {
-                                congrats.style.color = '#1e1b4b';
-                                congrats.style.webkitTextFillColor = '#1e1b4b';
-                                congrats.style.textShadow = 'none';
-                                congrats.style.fontSize = '3rem';
+                                congrats.style.setProperty('color', '#1e1b4b', 'important');
+                                congrats.style.setProperty('-webkit-text-fill-color', '#1e1b4b', 'important');
+                                congrats.style.setProperty('background', 'transparent', 'important');
+                                congrats.style.setProperty('-webkit-background-clip', 'padding-box', 'important');
+                                congrats.style.setProperty('text-shadow', 'none', 'important');
+                                congrats.style.setProperty('font-size', '42px', 'important');
+                                congrats.style.setProperty('opacity', '1', 'important');
+                                congrats.style.setProperty('animation', 'none', 'important');
+                            }
+
+                            const trophy = clonedContent.querySelector('.winner-trophy');
+                            if (trophy) {
+                                trophy.style.setProperty('animation', 'none', 'important');
+                                trophy.style.setProperty('transform', 'none', 'important');
                             }
 
                             const winnerName = clonedContent.querySelector('.winner-name');
                             if (winnerName) {
-                                winnerName.style.color = '#000000';
-                                winnerName.style.fontSize = '2.5rem';
+                                winnerName.style.setProperty('color', '#000000', 'important');
+                                winnerName.style.setProperty('font-size', '32px', 'important');
+                                winnerName.style.setProperty('opacity', '1', 'important');
                             }
 
                             const winnerLabel = clonedContent.querySelector('.winner-label');
                             if (winnerLabel) {
-                                winnerLabel.style.color = '#4b5563';
-                                winnerLabel.style.fontWeight = '700';
+                                winnerLabel.style.setProperty('color', '#6b7280', 'important');
+                                winnerLabel.style.setProperty('font-weight', '700', 'important');
+                                winnerLabel.style.setProperty('opacity', '1', 'important');
                             }
 
-                            // Restyle Rank Items
+                            // 3. Clear Rank Item Opacity and Gradients
                             const rankItems = clonedContent.querySelectorAll('.rank-item');
                             rankItems.forEach((item, idx) => {
-                                item.style.background = '#f9fafb';
-                                item.style.border = '1px solid #e5e7eb';
-                                item.style.color = '#000000';
-                                item.style.transform = 'none'; // Avoid blur from scale
-                                
-                                const name = item.querySelector('.rank-name');
-                                if (name) name.style.color = '#000000';
-
-                                const score = item.querySelector('.rank-score');
-                                if (score) score.style.color = idx === 0 ? '#22c55e' : '#000000';
+                                item.style.setProperty('background', '#f8fafc', 'important');
+                                item.style.setProperty('border', '1px solid #e2e8f0', 'important');
+                                item.style.setProperty('color', '#000000', 'important');
+                                item.style.setProperty('transform', 'none', 'important');
+                                item.style.setProperty('opacity', '1', 'important');
+                                item.style.setProperty('animation', 'none', 'important');
                                 
                                 const num = item.querySelector('.rank-num');
-                                if (num) num.style.color = idx === 0 ? '#b45309' : '#6b7280';
+                                if (num) num.style.setProperty('color', idx === 0 ? '#b45309' : '#6b7280', 'important');
+
+                                const name = item.querySelector('.rank-name');
+                                if (name) name.style.setProperty('color', '#000000', 'important');
+
+                                const score = item.querySelector('.rank-score');
+                                if (score) score.style.setProperty('color', idx === 0 ? '#16a34a' : '#000000', 'important');
                             });
 
-                            // Winner Badge (1st place)
+                            // Winner Highlighting
                             if (rankItems[0]) {
-                                rankItems[0].style.border = '2px solid #22c55e';
-                                rankItems[0].style.background = '#f0fdf4';
+                                rankItems[0].style.setProperty('border', '2px solid #16a34a', 'important');
+                                rankItems[0].style.setProperty('background', '#f0fdf4', 'important');
+                                rankItems[0].style.setProperty('transform', 'scale(1)', 'important');
                             }
                         }
                     }
