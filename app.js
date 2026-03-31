@@ -2,10 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let gameState = {
         players: [
-            { id: 0, name: 'Oyuncu 1', score: 0, history: [] },
-            { id: 1, name: 'Oyuncu 2', score: 0, history: [] },
-            { id: 2, name: 'Oyuncu 3', score: 0, history: [] },
-            { id: 3, name: 'Oyuncu 4', score: 0, history: [] }
+            { id: 0, name: 'Oyuncu 1', score: 0, history: [], isCik: false },
+            { id: 1, name: 'Oyuncu 2', score: 0, history: [], isCik: false },
+            { id: 2, name: 'Oyuncu 3', score: 0, history: [], isCik: false },
+            { id: 3, name: 'Oyuncu 4', score: 0, history: [], isCik: false }
         ],
         round: 1,
         viewedRound: 1,
@@ -139,6 +139,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>${item.type === 'penalty' ? 'Ceza' : 'Ödül'}</span>
                     </div>
                 `).join('') || `<div style="opacity:0.3; font-size:0.7rem;">${gameState.viewedRound}. Turda işlem yok</div>`;
+            }
+
+            // Update Cik Toggle UI
+            const cikToggle = card ? card.querySelector('.cik-toggle') : null;
+            if (cikToggle) {
+                if (player.isCik) {
+                    cikToggle.classList.add('active');
+                    // Check if it's a blinking round (1, 5, 9, 13)
+                    const cikRounds = [1, 5, 9, 13];
+                    if (cikRounds.includes(gameState.viewedRound)) {
+                        cikToggle.classList.add('blinking');
+                    } else {
+                        cikToggle.classList.remove('blinking');
+                    }
+                } else {
+                    cikToggle.classList.remove('active', 'blinking');
+                }
             }
         });
 
@@ -602,6 +619,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Card click
         const card = e.target.closest('.player-card');
+        const cikBtn = e.target.closest('.cik-toggle');
+
+        if (cikBtn) {
+            e.stopPropagation();
+            const id = parseInt(cikBtn.dataset.playerId);
+            toggleCik(id);
+            return;
+        }
+
         if (card) {
             const id = parseInt(card.dataset.playerId);
             openPlayerModal(id);
@@ -622,6 +648,13 @@ document.addEventListener('DOMContentLoaded', () => {
             closeResultsModal();
         }
     });
+
+    function toggleCik(playerId) {
+        const player = gameState.players.find(p => p.id === playerId);
+        player.isCik = !player.isCik;
+        updateUI();
+        saveState();
+    }
 
     // Capture and Share Logic
     if (shareResultBtn) {
