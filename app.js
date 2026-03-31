@@ -141,6 +141,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 `).join('') || `<div style="opacity:0.3; font-size:0.7rem;">${gameState.viewedRound}. Turda işlem yok</div>`;
             }
         });
+
+        // Update Winning Probabilities
+        updateWinningProbabilities();
+    }
+
+    function updateWinningProbabilities() {
+        const scores = gameState.players.map(p => p.score);
+        const maxScore = Math.max(...scores);
+        
+        // We use an "inverse" logic: the further you are below the max score, the higher your chance.
+        // We add a buffer so that even the person with the max score has some chance if the gap is small.
+        const buffer = 50; 
+        const weights = scores.map(s => (maxScore - s) + buffer);
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+        gameState.players.forEach((player, index) => {
+            const probEl = document.getElementById(`prob-${player.id}`);
+            if (probEl) {
+                const probability = ((weights[index] / totalWeight) * 100).toFixed(0);
+                probEl.textContent = `%${probability}`;
+            }
+        });
     }
 
     function updateModalDisplay() {

@@ -338,6 +338,30 @@ header {
     margin-bottom: 0.5rem;
 }
 
+.win-probability {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(236, 72, 153, 0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+    color: var(--accent-secondary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.player-card.card-lowest .win-probability {
+    background: rgba(34, 197, 94, 0.2);
+    border-color: var(--success);
+    color: var(--success);
+}
+
 /* Global History Styling */
 .global-history-list {
     display: flex;
