@@ -647,15 +647,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const canvas = await html2canvas(resultsContent, {
-                    backgroundColor: '#1E2235', // Match modal background
-                    scale: 2, // Higher resolution
-                    useCORS: true, // Allow loading external images like emojis/SVG if any
-                    logging: true, // Log errors to console if it fails
+                    backgroundColor: '#ffffff', // High-contrast for sharing
+                    scale: 3, // Higher resolution for crisp text
+                    useCORS: true,
+                    logging: true,
                     onclone: (clonedDoc) => {
                         const clonedContent = clonedDoc.querySelector('.results-content');
                         if (clonedContent) {
-                            // Replace transparent gradient with solid dark color to prevent pale screenshot
-                            clonedContent.style.background = '#1E2235';
+                            // High-contrast Theme for Screenshot
+                            clonedContent.style.background = '#ffffff';
+                            clonedContent.style.color = '#000000';
+                            clonedContent.style.border = '1px solid #dddddd';
+                            clonedContent.style.borderRadius = '0'; // Flat for better framing
+
+                            // Restyle Header
+                            const congrats = clonedContent.querySelector('.congrats-text');
+                            if (congrats) {
+                                congrats.style.color = '#1e1b4b';
+                                congrats.style.webkitTextFillColor = '#1e1b4b';
+                                congrats.style.textShadow = 'none';
+                                congrats.style.fontSize = '3rem';
+                            }
+
+                            const winnerName = clonedContent.querySelector('.winner-name');
+                            if (winnerName) {
+                                winnerName.style.color = '#000000';
+                                winnerName.style.fontSize = '2.5rem';
+                            }
+
+                            const winnerLabel = clonedContent.querySelector('.winner-label');
+                            if (winnerLabel) {
+                                winnerLabel.style.color = '#4b5563';
+                                winnerLabel.style.fontWeight = '700';
+                            }
+
+                            // Restyle Rank Items
+                            const rankItems = clonedContent.querySelectorAll('.rank-item');
+                            rankItems.forEach((item, idx) => {
+                                item.style.background = '#f9fafb';
+                                item.style.border = '1px solid #e5e7eb';
+                                item.style.color = '#000000';
+                                item.style.transform = 'none'; // Avoid blur from scale
+                                
+                                const name = item.querySelector('.rank-name');
+                                if (name) name.style.color = '#000000';
+
+                                const score = item.querySelector('.rank-score');
+                                if (score) score.style.color = idx === 0 ? '#22c55e' : '#000000';
+                                
+                                const num = item.querySelector('.rank-num');
+                                if (num) num.style.color = idx === 0 ? '#b45309' : '#6b7280';
+                            });
+
+                            // Winner Badge (1st place)
+                            if (rankItems[0]) {
+                                rankItems[0].style.border = '2px solid #22c55e';
+                                rankItems[0].style.background = '#f0fdf4';
+                            }
                         }
                     }
                 });
