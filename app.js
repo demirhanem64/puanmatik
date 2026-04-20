@@ -159,24 +159,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Update Winning Probabilities
-        updateWinningProbabilities();
+        // Update Losing Probabilities
+        updateLosingProbabilities();
     }
 
-    function updateWinningProbabilities() {
-        const scores = gameState.players.map(p => p.score);
+    function updateLosingProbabilities() {
+        const players = gameState.players;
+        const scores = players.map(p => Number(p.score) || 0);
+        const minScore = Math.min(...scores);
         const maxScore = Math.max(...scores);
-        
-        // We use an "inverse" logic: the further you are below the max score, the higher your chance.
-        // We add a buffer so that even the person with the max score has some chance if the gap is small.
-        const buffer = 50; 
-        const weights = scores.map(s => (maxScore - s) + buffer);
+        const allZero = scores.every(s => s === 0);
+
+        if (allZero) {
+            players.forEach(p => {
+                const probEl = document.getElementById(`prob-${p.id}`);
+                if (probEl) probEl.textContent = '%25';
+            });
+            return;
+        }
+
+        // Logic: Distance from the leader (minScore) determines losing probability
+        // High score = further from leader = high losing probability
+        const buffer = 10; // Small buffer to ensure even the leader has a tiny %
+        const weights = scores.map(s => (s - minScore) + buffer);
         const totalWeight = weights.reduce((sum, w) => sum + w, 0);
 
-        gameState.players.forEach((player, index) => {
+        players.forEach((player, index) => {
             const probEl = document.getElementById(`prob-${player.id}`);
             if (probEl) {
-                const probability = ((weights[index] / totalWeight) * 100).toFixed(0);
+                const probability = Math.round((weights[index] / totalWeight) * 100);
                 probEl.textContent = `%${probability}`;
             }
         });
