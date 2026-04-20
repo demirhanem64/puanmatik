@@ -426,9 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
             gameState.players.forEach(p => {
                 p.score = 0;
                 p.history = [];
+                p.isCik = false;
             });
             gameState.round = 1;
             gameState.viewedRound = 1;
+            gameState.dealerId = null;
             saveState(); // Overwrite cache with 0 score state instead of removing, keeps names
             updateUI();
         }
