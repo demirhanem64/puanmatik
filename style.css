@@ -437,22 +437,34 @@ header {
     display: block;
 }
 
-/* Animated Border for Dealer */
+/* Animated Outer Glow for Dealer - Layered to coexist with score borders */
 .player-card.is-dealer {
-    border-color: var(--warning);
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
-    animation: dealer-glow 2s infinite alternate;
+    z-index: 10;
+    animation: dealer-glow 1.5s infinite alternate ease-in-out;
 }
 
 @keyframes dealer-glow {
     0% {
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.3), inset 0 0 10px rgba(245, 158, 11, 0.1);
-        border-color: var(--warning);
+        box-shadow: 0 0 5px rgba(245, 158, 11, 0.2), 0 0 15px rgba(245, 158, 11, 0.2);
+        transform: scale(1.01);
     }
     100% {
-        box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(245, 158, 11, 0.2);
-        border-color: #fbbf24;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.5), 0 0 25px rgba(245, 158, 11, 0.4);
+        transform: scale(1.02);
     }
+}
+
+/* Ensure score borders take precedence for the solid line */
+.player-card.card-highest {
+    border: 3px solid var(--danger) !important;
+}
+
+.player-card.card-lowest {
+    border: 3px solid var(--success) !important;
+}
+
+.player-card.is-dealer:not(.card-highest):not(.card-lowest) {
+    border: 2px solid var(--warning);
 }
 
 /* Global History Styling */
