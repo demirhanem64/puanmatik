@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
         viewedRound: 1,
         activePlayerId: null,
         currentInput: '0',
-        inputMode: 'penalty' // 'penalty' or 'reward'
+        inputMode: 'penalty', // 'penalty' or 'reward'
+        dealerId: null
     };
 
     // --- DOM Elements ---
@@ -71,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }));
                 gameState.round = parsed.round || 1;
                 gameState.viewedRound = gameState.round; // Default to current round
+                gameState.dealerId = parsed.dealerId !== undefined ? parsed.dealerId : null;
             } catch (e) {
                 console.error("Cache parsing error", e);
             }
@@ -81,7 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveState() {
         sessionStorage.setItem('puanmatik_state_v3', JSON.stringify({
             players: gameState.players,
-            round: gameState.round
+            round: gameState.round,
+            dealerId: gameState.dealerId
         }));
     }
 
@@ -155,6 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     cikToggle.classList.remove('active', 'blinking');
+                }
+            }
+
+            // Update Dealer UI
+            if (card) {
+                if (gameState.dealerId === player.id) {
+                    card.classList.add('is-dealer');
+                } else {
+                    card.classList.remove('is-dealer');
                 }
             }
         });
@@ -384,6 +396,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('Turu bitirip yeni tura geçmek istediğinize emin misiniz?')) {
             gameState.round++;
             gameState.viewedRound = gameState.round;
+            
+            // Dealer Rotation (Counter-Clockwise based on arrows: 1 -> 3 -> 0 -> 2 -> 1)
+            if (gameState.dealerId !== null) {
+                const rotationMap = {
+                    '1': 3, // Bottom -> Right
+                    '3': 0, // Right -> Top
+                    '0': 2, // Top -> Left
+                    '2': 1  // Left -> Bottom
+                };
+                gameState.dealerId = rotationMap[gameState.dealerId];
+            }
+
             updateUI();
             saveState();
         }
@@ -663,6 +687,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleCik(playerId) {
         const player = gameState.players.find(p => p.id === playerId);
         player.isCik = !player.isCik;
+        
+        // Initial Dealer Assignment: If no dealer exists yet, the first person to get Cik becomes the dealer
+        if (player.isCik && gameState.dealerId === null) {
+            gameState.dealerId = playerId;
+        }
+
         updateUI();
         saveState();
     }
